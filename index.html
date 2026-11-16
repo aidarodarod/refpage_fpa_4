@@ -2790,6 +2790,126 @@
         }
       }
     </style>
+
+    <style>
+      /* ===== Анимации страницы: загрузка, суммы, ховеры (как «Наша история» на new.fpa.ru) ===== */
+      :root{--hover-ease:cubic-bezier(0,0,.58,1);--hover-time:.3s;--blue-hover:#5182ff}
+
+      /* --- Первый экран: один сценарий загрузки --- */
+      .hero-light{position:absolute;inset:0;z-index:-1;pointer-events:none;opacity:0;
+        background:radial-gradient(46% 62% at 22% 48%,rgba(117,202,255,.26),rgba(117,202,255,0) 70%)}
+      @media(max-width:782px){.hero-light{background:radial-gradient(80% 40% at 50% 22%,rgba(117,202,255,.24),rgba(117,202,255,0) 72%)}}
+      .hero-background,.hero-city-mobile{translate:0 var(--hero-shift,0px)}
+      @media(prefers-reduced-motion:no-preference){
+        .js .hero:not(.is-ready) :is(.hero-copy>*,.hero-caption,.hero-actor,.hero-photo-mobile,.hero-glow-mobile,.hero-light){opacity:0}
+        .hero.is-ready .hero-background,.hero.is-ready .hero-city-mobile{animation:hero-city 1.1s cubic-bezier(.22,1,.36,1) backwards}
+        .hero.is-ready .hero-actor,.hero.is-ready .hero-photo-mobile{animation:hero-person 1.1s cubic-bezier(.22,1,.36,1) .1s backwards}
+        .hero.is-ready .hero-glow-mobile,.hero.is-ready .hero-light{animation:hero-glow 1.8s cubic-bezier(.22,1,.36,1) .15s both}
+        .hero.is-ready .hero-copy>*{animation:hero-rise .8s cubic-bezier(.22,1,.36,1) backwards}
+        .hero.is-ready .hero-copy>:nth-child(1){animation-delay:.2s}
+        .hero.is-ready .hero-copy>:nth-child(2){animation-delay:.32s}
+        .hero.is-ready .hero-copy>:nth-child(3){animation-delay:.5s}
+        .hero.is-ready .hero-caption{animation:hero-rise .8s cubic-bezier(.22,1,.36,1) .75s backwards}
+      }
+      @keyframes hero-city{from{opacity:.55;translate:0 48px}}
+      @keyframes hero-person{from{opacity:0;translate:0 40px}}
+      @keyframes hero-glow{from{opacity:0;scale:.92}to{opacity:1;scale:1}}
+      @keyframes hero-rise{from{opacity:0;translate:0 16px}}
+
+      /* --- Суммы: цифры-барабаны при появлении блока --- */
+      .bonus-digits{display:inline-flex;vertical-align:top;font-variant-numeric:tabular-nums;user-select:none}
+      .bonus-digit{display:block;height:var(--lh,1.2em);overflow:hidden;
+        -webkit-mask-image:linear-gradient(transparent,#000 16%,#000 84%,transparent);mask-image:linear-gradient(transparent,#000 16%,#000 84%,transparent)}
+      .bonus-reel{display:flex;flex-direction:column;transform:translateY(calc(var(--to) * var(--lh,1.2em) * -1))}
+      .bonus-reel span{display:block;height:var(--lh,1.2em);line-height:var(--lh,1.2em)}
+      .bonus-gap{display:inline-block;width:.26em}
+      .sr-only{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+      .is-counting .bonus-reel{transform:translateY(0)}
+      .is-counted .bonus-reel{transition:transform 1.5s cubic-bezier(.16,1,.3,1);transition-delay:calc(var(--d) * 70ms)}
+
+      /* --- Ховеры: как в «Нашей истории» (ease-out, 0.3s) --- */
+      .desktop-timeline h4,.mobile-timeline h3{transform-origin:left center;transition:transform var(--hover-time) var(--hover-ease),color var(--hover-time) var(--hover-ease)}
+      .desktop-timeline h4{display:inline-block}
+      .desktop-timeline p,.mobile-timeline p,.totals-card strong{transition:color var(--hover-time) var(--hover-ease)}
+      .desktop-timeline li:before,.mobile-timeline li:before{transition:scale var(--hover-time) var(--hover-ease),border-color var(--hover-time) var(--hover-ease)}
+      @media(hover:hover) and (pointer:fine){
+        .desktop-timeline li:hover h4,.mobile-timeline li:hover h3{transform:scale(1.114);color:#808080}
+        .desktop-timeline li:hover p,.mobile-timeline li:hover p,.totals-card div:hover strong{color:var(--blue-hover)}
+        .desktop-timeline li:hover:before{scale:var(--ring-hover,1.36);border-color:var(--blue-hover)}
+        .mobile-timeline li:hover:before{scale:1.42;border-color:var(--blue-hover)}
+        .friend-card:hover h3{color:#202020}
+      }
+      @media(prefers-reduced-motion:reduce){
+        .hero-background,.hero-city-mobile{translate:none}
+        .desktop-timeline h4,.mobile-timeline h3,.desktop-timeline p,.mobile-timeline p,.totals-card strong,
+        .desktop-timeline li:before,.mobile-timeline li:before{transition:none}
+      }
+    </style>
+    <script>document.documentElement.classList.add('js')</script>
+
+    <style>
+      /* ===== Адаптивка десктопа: 783–1440 ===== */
+
+      /* Таймлайн: кружки и линия на CSS на всех десктопных ширинах (одинаково с макетом 1920) */
+      @media (min-width:783px){
+        .desktop-marker{display:none!important}
+        /* отступ под разделителем внутри пункта, чтобы линия доходила до следующего кружка */
+        .desktop-timeline li{position:relative;padding-left:38px}
+        .desktop-timeline li:not(:last-child){padding-bottom:24px}
+        .desktop-timeline li:not(:last-child) > div{margin-bottom:0}
+        /* кружки — как в макете 8823:3322: центр по X 11.5px от пункта, 14 / 18 / 22, обводка 2.5 */
+        .desktop-timeline li:before{content:"";position:absolute;box-sizing:border-box;z-index:1;border-radius:50%;
+          background:#fff;border:2.5px solid var(--blue);left:4.5px;top:5px;width:14px;height:14px;--ring-hover:1.36}
+        .desktop-timeline li:nth-child(2):before{left:2.5px;top:2px;width:18px;height:18px;--ring-hover:1.28}
+        .desktop-timeline li:nth-child(3):before{left:.5px;top:-.44px;width:22px;height:22px;--ring-hover:1.23}
+        /* линия: от низа кружка до верха следующего */
+        .desktop-timeline li:not(:last-child):after{content:"";position:absolute;z-index:0;left:10.5px;width:2px;
+          background:var(--blue);top:19px;bottom:-4px}
+        .desktop-timeline li:nth-child(2):after{top:20px;bottom:0}
+      }
+
+      /* Шапка: пункты меню сжимаются плавно, без обрезки «Войти» */
+      @media (min-width:783px) and (max-width:1399px){
+        .header-inner{gap:clamp(16px,2vw,28px)}
+        nav{width:auto;flex:0 1 auto;justify-content:flex-end;gap:clamp(2px,calc(1.2vw - 8px),12px);
+          font-size:clamp(12.5px,calc(6.5px + .72vw),15.5px)}
+        .site-header.header-fixed nav{font-size:min(clamp(12.5px,calc(6.5px + .72vw),15.5px),14.5px)}
+        nav a,nav a:nth-child(n){width:auto;flex:0 0 auto;padding:0 clamp(4px,calc(2.2vw - 16px),18px)}
+        nav a.login{padding:0 clamp(14px,1.6vw,24px)}
+      }
+      @media (min-width:783px) and (max-width:880px){
+        .brand,.site-header.header-fixed .brand{width:150px;height:auto}
+      }
+
+      /* Первый экран: артист уменьшается, текст получает больше места */
+      @media (min-width:783px) and (max-width:1024px){
+        .hero-actor{width:900px;height:auto;left:calc(50% + 250px)}
+        .hero-copy{max-width:52%}
+        .hero h1{font-size:30px;line-height:39px}
+        .hero-copy > p{font-size:17px;line-height:28px;margin-top:20px}
+        .hero-cta{margin-top:28px}
+        .hero-caption{right:24px}
+      }
+      @media (min-width:783px) and (max-width:880px){
+        .hero-actor{width:780px;left:calc(50% + 215px)}
+        .hero-copy{max-width:56%}
+      }
+
+      /* Бонусы: на узком десктопе таймлайн на всю ширину, итоги и «Другу» — парой ниже */
+      @media (min-width:783px) and (max-width:1100px){
+        .bonus-layout{grid-template-columns:1fr}
+        .bonus-timeline-card{min-height:0;padding-right:28px}
+        .bonus-side{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}
+        .totals-card{justify-content:center}
+        .friend-card{height:100%}
+        .friend-card > p{min-height:0}
+        .friend-spacer{flex:1}
+      }
+      @media (min-width:783px) and (max-width:1150px){
+        .bonus-section{padding-top:36px}
+        .bonus-desktop > h2{font-size:28px;line-height:34px;margin-bottom:20px}
+      }
+    </style>
   </head>
   <body>
     <header class="site-header">
@@ -2884,6 +3004,7 @@
             alt="Владимир Вдовиченков"
           />
         </div>
+        <div class="hero-light" aria-hidden="true"></div>
         <div class="container hero-copy">
           <h1 id="hero-title">Деньги вам и друзьям!</h1>
           <p>
@@ -3956,6 +4077,98 @@
         mobile.addEventListener("change", () => {
           if (info.classList.contains("active")) setOpen(false);
         });
+      })();
+    </script>
+
+    <script>
+      /* Анимации страницы: первый экран, параллакс, суммы-барабаны */
+      (() => {
+        const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+        const hero = document.querySelector(".hero");
+        if (hero) {
+          let started = false;
+          const start = () => {
+            if (started) return;
+            started = true;
+            requestAnimationFrame(() => hero.classList.add("is-ready"));
+          };
+          const bg = hero.querySelector(
+            matchMedia("(max-width:782px)").matches ? ".hero-city-mobile" : ".hero-background",
+          );
+          (bg && bg.decode ? bg.decode() : Promise.resolve()).catch(() => {}).then(start);
+          setTimeout(start, 1200);
+          if (!reduced) {
+            let ticking = false;
+            const shift = () => {
+              ticking = false;
+              const y = Math.min(scrollY, hero.offsetHeight);
+              hero.style.setProperty("--hero-shift", (y * 0.14).toFixed(1) + "px");
+            };
+            addEventListener("scroll", () => {
+              if (!ticking) { ticking = true; requestAnimationFrame(shift); }
+            }, { passive: true });
+            shift();
+          }
+        }
+        if (reduced || !("IntersectionObserver" in window)) return;
+        const groups = [...document.querySelectorAll(".desktop-timeline, .totals-card, .mobile-timeline")];
+        const amounts = [];
+        groups.forEach((group) => {
+          const targets = group.querySelectorAll(group.classList.contains("totals-card") ? "strong" : "p");
+          targets.forEach((el, i) => {
+            const text = el.textContent;
+            const m = text.match(/\d[\d\s ]*\d|\d/);
+            if (!m) return;
+            const sr = document.createElement("span");
+            sr.className = "sr-only";
+            sr.textContent = text.trim();
+            const lh = parseFloat(getComputedStyle(el).lineHeight) || el.offsetHeight;
+            const box = document.createElement("span");
+            box.className = "bonus-digits";
+            box.setAttribute("aria-hidden", "true");
+            box.style.setProperty("--lh", lh + "px");
+            let d = 0;
+            for (const ch of m[0]) {
+              if (/\d/.test(ch)) {
+                const cell = document.createElement("span");
+                cell.className = "bonus-digit";
+                const reel = document.createElement("span");
+                reel.className = "bonus-reel";
+                reel.style.setProperty("--to", 10 + Number(ch));
+                reel.style.setProperty("--d", d++);
+                for (let k = 0; k < 20; k++) {
+                  const s = document.createElement("span");
+                  s.textContent = k % 10;
+                  reel.append(s);
+                }
+                cell.append(reel);
+                box.append(cell);
+              } else {
+                const g = document.createElement("span");
+                g.className = "bonus-gap";
+                box.append(g);
+              }
+            }
+            const before = document.createElement("span"), after = document.createElement("span");
+            before.setAttribute("aria-hidden", "true");
+            after.setAttribute("aria-hidden", "true");
+            before.textContent = text.slice(0, m.index);
+            after.textContent = text.slice(m.index + m[0].length);
+            el.replaceChildren(sr, before, box, after);
+            el.classList.add("is-counting");
+            amounts.push(el);
+          });
+        });
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach((e) => {
+            if (!e.isIntersecting) return;
+            const g = e.target;
+            io.unobserve(g);
+            g.classList.add("is-counted");
+            requestAnimationFrame(() => requestAnimationFrame(() => g.classList.remove("is-counting")));
+          });
+        }, { threshold: 0.9 });
+        amounts.forEach((a) => io.observe(a));
       })();
     </script>
   </body>
