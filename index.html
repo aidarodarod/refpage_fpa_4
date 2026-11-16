@@ -2863,12 +2863,12 @@
         /* кружки — как в макете 8823:3322: центр по X 11.5px от пункта, 14 / 16 / 18, обводка 2.5 */
         .desktop-timeline li:before{content:"";position:absolute;box-sizing:border-box;z-index:1;border-radius:50%;
           background:#fff;border:2.5px solid var(--blue);left:4.5px;top:5px;width:14px;height:14px;--ring-hover:1.36}
-        .desktop-timeline li:nth-child(2):before{left:3.5px;top:2px;width:16px;height:16px;--ring-hover:1.31}
-        .desktop-timeline li:nth-child(3):before{left:2.5px;top:-.44px;width:18px;height:18px;--ring-hover:1.28}
+        .desktop-timeline li:nth-child(2):before{left:3.5px;top:4px;width:16px;height:16px;--ring-hover:1.31}
+        .desktop-timeline li:nth-child(3):before{left:2.5px;top:2.56px;width:18px;height:18px;--ring-hover:1.28}
         /* линия: от низа кружка до верха следующего */
         .desktop-timeline li:not(:last-child):after{content:"";position:absolute;z-index:0;left:10.5px;width:2px;
           background:var(--blue);top:19px;bottom:-4px}
-        .desktop-timeline li:nth-child(2):after{top:18px;bottom:0}
+        .desktop-timeline li:nth-child(2):after{top:20px;bottom:-2.56px}
       }
 
       /* Шапка: пункты меню сжимаются плавно, без обрезки «Войти» */
@@ -2957,6 +2957,52 @@
 }
 @media (max-width:782px) and (hover:hover) and (pointer:fine){
   .mobile-timeline li:hover:before{scale:var(--ring-hover)}
+}
+</style>
+<style id="hero-cta-pulse">
+/* Кнопка первого экрана: размер по макету 4 реф_mobile (353×48, отступ 8px внутри блока) + мягкая пульсация */
+@media (max-width:782px){
+  .hero-copy .hero-cta{width:auto;margin-inline:8px}
+}
+.hero-cta{position:relative;isolation:isolate}
+.hero-cta::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;
+  box-shadow:0 0 0 0 rgba(255,255,255,.5);opacity:0}
+@media (prefers-reduced-motion:no-preference){
+  .hero.is-ready .hero-cta::after{animation:hero-cta-pulse 2.6s cubic-bezier(.22,1,.36,1) 1.6s infinite}
+  .hero.is-ready .hero-cta:hover::after,.hero.is-ready .hero-cta:focus-visible::after{animation-play-state:paused;opacity:0}
+}
+@keyframes hero-cta-pulse{
+  0%{opacity:1;box-shadow:0 0 0 0 rgba(255,255,255,.5)}
+  70%,100%{opacity:0;box-shadow:0 0 0 12px rgba(255,255,255,0)}
+}
+</style>
+<style id="card-hover-scale">
+/* Кликабельные блоки на десктопе: плавно увеличиваются при наведении (как на alfabank.ru).
+   Некликабельные блоки не увеличиваются. */
+.is-tappable{cursor:pointer}
+@media (min-width:783px) and (hover:hover) and (pointer:fine){
+  .is-tappable{position:relative;transform-origin:50% 50%;backface-visibility:hidden;
+    transition:transform .4s cubic-bezier(.25,.46,.45,.94),box-shadow .4s cubic-bezier(.25,.46,.45,.94)}
+  .is-tappable:hover,.is-tappable:has(:focus-visible){transform:scale(1.02);box-shadow:none;z-index:2}
+  .is-tappable:hover .referral-button{background:#3364e3;color:#fff}
+  .is-tappable:hover .review-poster .play{width:74px;height:52px}
+  /* изображения внутри кликабельных блоков не анимируем */
+  .is-tappable .referral-image img,.is-tappable .referral-image:hover img,.is-tappable:hover .referral-image img{transform:none;transition:none}
+  /* «Деньги вам и друзьям»: увеличиваются информационные блоки, блок с кнопкой — нет */
+  .bonus-timeline-card,.totals-card{transform-origin:50% 50%;backface-visibility:hidden;
+    transition:transform .4s cubic-bezier(.25,.46,.45,.94)}
+  .bonus-timeline-card:hover,.totals-card:hover{transform:scale(1.02);position:relative;z-index:2}
+  /* таймлайн: без увеличения «1-й/2-й/3-й клиент» и без смены цвета суммы — остаётся только увеличение кружка */
+  .desktop-timeline li:hover h4,.mobile-timeline li:hover h3{transform:none;color:#202020}
+  .desktop-timeline li:hover p,.mobile-timeline li:hover p{color:#295ad9}
+  /* итоги 37 000 / +15 000: без смены цвета, только увеличение блока */
+  .totals-card div:hover strong{color:#295ad9}
+  /* блоки без действия — без увеличения */
+  .stats-grid article:hover{transform:none;box-shadow:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .is-tappable,.is-tappable:hover,.is-tappable:has(:focus-visible){transform:none;transition:none}
+  .bonus-timeline-card,.totals-card,.bonus-timeline-card:hover,.totals-card:hover{transform:none;transition:none}
 }
 </style>
 </head>
@@ -4327,5 +4373,26 @@
         amounts.forEach((a) => io.observe(a));
       })();
     </script>
-  </body>
+  <script>
+/* Весь блок кликается как его главная кнопка / ссылка */
+(() => {
+  const cards = [
+    [".referral-bonus-card", ".referral-button"],
+    [".review", ".review-poster"],
+  ];
+  cards.forEach(([card, action]) => {
+    document.querySelectorAll(card).forEach((el) => {
+      const target = el.querySelector(action);
+      if (!target) return;
+      el.classList.add("is-tappable");
+      el.addEventListener("click", (event) => {
+        if (event.target.closest("a, button, input, label, select, textarea")) return;
+        if (getSelection && String(getSelection()).length) return;
+        target.click();
+      });
+    });
+  });
+})();
+</script>
+</body>
 </html>
