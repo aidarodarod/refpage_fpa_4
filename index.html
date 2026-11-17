@@ -2955,6 +2955,8 @@
   .bonus-intro p{font-weight:425;letter-spacing:.01em;color:#242424}
   .bonus-fields .floating input{height:50px;font-size:15px}
   .bonus-fields .floating span{font-size:15px;top:15px}
+  .bonus-fields{gap:16px}                                   /* сайт: между полями 16 (было 9) */
+  .bonus-scroll{padding-bottom:max(76px,env(safe-area-inset-bottom))} /* сайт: после согласий 76 (было 18) */
   /* закрытие шторки: длительность анимации = таймеру скрипта (320 мс), без рывка */
   .bonus-modal .bonus-panel{animation-duration:.32s;animation-timing-function:ease-out}
   .bonus-modal.is-closing .bonus-panel{animation-duration:.32s;animation-timing-function:ease-in}
